@@ -79,14 +79,14 @@
   - [x] 9.3 Bloqueio por limite de conversas do plano
     - _Requisitos: 8.4, 10.5_
 
-- [ ] 10. Inbox omnichannel (módulo `inbox`)
-  - [ ] 10.1 Listagem de conversas com filtros por estado
+- [x] 10. Inbox omnichannel (módulo `inbox`)
+  - [x] 10.1 Listagem de conversas com filtros por estado
     - _Requisitos: 9.1_
-  - [ ] 10.2 Assumir conversa (IA→Humano) pausando respostas automáticas
+  - [x] 10.2 Assumir conversa (IA→Humano) pausando respostas automáticas
     - _Requisitos: 9.2_
-  - [ ] 10.3 Transferência com histórico, anotações e etiquetas
+  - [x] 10.3 Transferência com histórico, anotações e etiquetas
     - _Requisitos: 9.3, 9.4_
-  - [ ] 10.4 Envio de mensagem pelo atendente
+  - [x] 10.4 Envio de mensagem pelo atendente
     - _Requisitos: 9.5_
 
 - [ ] 11. Billing (módulo `billing`)
