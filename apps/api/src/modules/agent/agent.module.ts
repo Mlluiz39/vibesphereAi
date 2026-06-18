@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AgentController } from './agent.controller';
 import { AgentService } from './agent.service';
-import { BillingModule } from '../billing/billing.module';
 
+// BillingModule é @Global: PlanLimitGuard fica disponível para o controller.
 @Module({
-  imports: [BillingModule],
   controllers: [AgentController],
   providers: [AgentService],
   exports: [AgentService],
