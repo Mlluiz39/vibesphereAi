@@ -6,6 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { TenantModule } from './modules/tenant/tenant.module';
 import { UserModule } from './modules/user/user.module';
 import { AgentModule } from './modules/agent/agent.module';
+import { BillingModule } from './modules/billing/billing.module';
 import { KnowledgeModule } from './modules/knowledge/knowledge.module';
 import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
 import { InboxModule } from './modules/inbox/inbox.module';
@@ -24,6 +25,7 @@ import { validateEnv } from './config/env.validation';
     AuthModule,
     TenantModule,
     UserModule,
+    BillingModule,
     AgentModule,
     KnowledgeModule,
     WhatsAppModule,

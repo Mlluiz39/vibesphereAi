@@ -66,6 +66,7 @@ model Subscription {
   planId               String    @map("plan_id") @db.Uuid
   status               String    @default("active")
   stripeSubscriptionId String?   @map("stripe_subscription_id")
+  stripeCustomerId     String?   @map("stripe_customer_id")
   currentPeriodEnd     DateTime? @map("current_period_end")
   createdAt            DateTime  @default(now()) @map("created_at")
 
@@ -73,7 +74,21 @@ model Subscription {
   plan   Plan   @relation(fields: [planId], references: [id])
 
   @@index([tenantId])
+  @@index([stripeSubscriptionId])
   @@map("subscriptions")
+}
+
+/**
+ * Idempotência de webhooks de pagamento (nível de plataforma, sem tenant) — Req 10.4.
+ */
+model ProcessedWebhookEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  provider    String
+  eventId     String   @map("event_id")
+  processedAt DateTime @default(now()) @map("processed_at")
+
+  @@unique([provider, eventId])
+  @@map("processed_webhook_events")
 }
 
 // ----------------------------------------------------------------------------

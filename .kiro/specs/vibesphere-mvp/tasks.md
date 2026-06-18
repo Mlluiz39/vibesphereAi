@@ -89,14 +89,14 @@
   - [x] 10.4 Envio de mensagem pelo atendente
     - _Requisitos: 9.5_
 
-- [ ] 11. Billing (módulo `billing`)
-  - [ ] 11.1 Subscriptions e aplicação de limites por plano
+- [x] 11. Billing (módulo `billing`)
+  - [x] 11.1 Subscriptions e aplicação de limites por plano
     - _Requisitos: 10.1, 10.2_
-  - [ ] 11.2 Integração Stripe (assinaturas) com arquitetura extensível
+  - [x] 11.2 Integração Stripe (assinaturas) com arquitetura extensível
     - _Requisitos: 10.3_
-  - [ ] 11.3 Webhook de pagamento idempotente atualizando status do tenant
+  - [x] 11.3 Webhook de pagamento idempotente atualizando status do tenant
     - _Requisitos: 10.4_
-  - [ ] 11.4 `usage_counters` e sinalização de upgrade ao atingir limite
+  - [x] 11.4 `usage_counters` e sinalização de upgrade ao atingir limite
     - _Requisitos: 10.5_
 
 - [ ] 12. Auditoria e segurança transversais (módulo `audit`)
