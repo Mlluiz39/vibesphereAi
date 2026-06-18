@@ -46,4 +46,5 @@ export interface AuthTokenPayload {
 export const QUEUE = {
   INBOUND_MESSAGES: 'inbound-messages',
   DOCUMENT_INGESTION: 'document-ingestion',
+  FLOW_RUNS: 'flow-runs',
 } as const;

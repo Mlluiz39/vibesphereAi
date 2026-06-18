@@ -12,28 +12,28 @@
   - [x] 1.5 Telas de CRM no dashboard (leads + funil)
     - _Requisitos: 1, 2_
 
-- [ ] 2. Analytics (módulo `analytics`)
-  - [ ] 2.1 KPIs por período (mensagens, conversas, leads, oportunidades)
+- [x] 2. Analytics (módulo `analytics`)
+  - [x] 2.1 KPIs por período (mensagens, conversas, leads, oportunidades)
     - _Requisitos: 3.1, 3.3_
-  - [ ] 2.2 Tempo médio de primeira resposta e taxa de conversão
+  - [x] 2.2 Tempo médio de primeira resposta e taxa de conversão
     - _Requisitos: 3.2_
-  - [ ] 2.3 Tela de dashboard de Analytics
+  - [x] 2.3 Tela de dashboard de Analytics
     - _Requisitos: 3_
 
-- [ ] 3. Flow Builder (módulo `flow`)
-  - [ ] 3.1 Schema: flows, flow_nodes, flow_edges, flow_runs (+ RLS)
+- [x] 3. Flow Builder (módulo `flow`)
+  - [x] 3.1 Schema: flows, flow_nodes, flow_edges, flow_runs (+ RLS)
     - _Requisitos: 4.1, 4.4_
-  - [ ] 3.2 CRUD de flows (nós/edges) e validação do grafo
+  - [x] 3.2 CRUD de flows (nós/edges) e validação do grafo
     - _Requisitos: 4.1, 4.2_
-  - [ ] 3.3 Motor de execução assíncrono (worker) com tipos de nó
+  - [x] 3.3 Motor de execução assíncrono (worker) com tipos de nó
     - _Requisitos: 4.2, 4.3, 4.4_
-  - [ ] 3.4 Editor visual no dashboard
+  - [x] 3.4 Editor visual no dashboard
     - _Requisitos: 4_
 
-- [ ] 4. Marketplace (módulo `marketplace`)
-  - [ ] 4.1 Catálogo de templates por categoria
+- [x] 4. Marketplace (módulo `marketplace`)
+  - [x] 4.1 Catálogo de templates por categoria
     - _Requisitos: 5.1_
-  - [ ] 4.2 Instalação de template criando recursos no tenant (respeitando limites)
+  - [x] 4.2 Instalação de template criando recursos no tenant (respeitando limites)
     - _Requisitos: 5.2, 5.3_
-  - [ ] 4.3 Tela de Marketplace no dashboard
+  - [x] 4.3 Tela de Marketplace no dashboard
     - _Requisitos: 5_

@@ -3,6 +3,7 @@ import IORedis from 'ioredis';
 import { QUEUE } from '@vibesphere/shared';
 import { IngestionJobData, markIngestionError, processIngestion } from './ingestion';
 import { InboundJobData, processInboundMessage } from './engine';
+import { FlowRunJobData, processFlowRun } from './flow';
 
 /**
  * Ponto de entrada dos workers BullMQ.
@@ -43,4 +44,16 @@ messageWorker.on('failed', (job, err) => {
   console.error(`[messages] job ${job?.id} falhou: ${err.message}`);
 });
 
-console.log('VibeSphere workers iniciados (ingestion, messages).');
+const flowWorker = new Worker<FlowRunJobData>(
+  QUEUE.FLOW_RUNS,
+  async (job) => {
+    await processFlowRun(job.data);
+  },
+  { connection, concurrency: 5 },
+);
+
+flowWorker.on('failed', (job, err) => {
+  console.error(`[flows] run ${job?.data?.runId} falhou: ${err.message}`);
+});
+
+console.log('VibeSphere workers iniciados (ingestion, messages, flows).');
