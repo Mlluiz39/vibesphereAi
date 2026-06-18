@@ -99,22 +99,22 @@
   - [x] 11.4 `usage_counters` e sinalização de upgrade ao atingir limite
     - _Requisitos: 10.5_
 
-- [ ] 12. Auditoria e segurança transversais (módulo `audit`)
-  - [ ] 12.1 Audit log de operações sensíveis e acessos negados entre tenants
+- [x] 12. Auditoria e segurança transversais (módulo `audit`)
+  - [x] 12.1 Audit log de operações sensíveis e acessos negados entre tenants
     - _Requisitos: 11.1, 3.4_
-  - [ ] 12.2 Rate limiting em `/auth/*` e webhooks
+  - [x] 12.2 Rate limiting em `/auth/*` e webhooks
     - _Requisitos: 11.2_
-  - [ ] 12.3 Criptografia de segredos de provider + validação/sanitização de DTOs
+  - [x] 12.3 Criptografia de segredos de provider + validação/sanitização de DTOs
     - _Requisitos: 11.3, 11.4_
-  - [ ] 12.4 Exclusão/anonimização de dados pessoais (LGPD)
+  - [x] 12.4 Exclusão/anonimização de dados pessoais (LGPD)
     - _Requisitos: 11.5_
 
-- [ ] 13. Dashboard (app `dashboard`, Next.js)
-  - [ ] 13.1 Fluxo de login/refresh e contexto de tenant no front
+- [x] 13. Dashboard (app `dashboard`, Next.js)
+  - [x] 13.1 Fluxo de login/refresh e contexto de tenant no front
     - _Requisitos: 1, 2, 3_
-  - [ ] 13.2 Telas de Agentes, Base de Conhecimento e Inbox
+  - [x] 13.2 Telas de Agentes, Base de Conhecimento e Inbox
     - _Requisitos: 5, 6, 9_
 
-- [ ] 14. Smoke e2e do fluxo principal
+- [x] 14. Smoke e2e do fluxo principal
   - Login → criar agente → conectar canal (mock) → simular mensagem → resposta gerada
   - _Requisitos: 1, 5, 7, 8_
