@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
 import { TenantModule } from './modules/tenant/tenant.module';
 import { UserModule } from './modules/user/user.module';
+import { AgentModule } from './modules/agent/agent.module';
 import { KnowledgeModule } from './modules/knowledge/knowledge.module';
 import { QueueModule } from './queue/queue.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
@@ -21,6 +22,7 @@ import { validateEnv } from './config/env.validation';
     AuthModule,
     TenantModule,
     UserModule,
+    AgentModule,
     KnowledgeModule,
   ],
   providers: [
