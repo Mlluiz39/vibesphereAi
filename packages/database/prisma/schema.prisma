@@ -1,0 +1,317 @@
+// VibeSphere AI — Schema multi-tenant (shared schema com tenant_id) — Requisito 3.
+// pgvector é habilitado via migration SQL (ver prisma/migrations e rls.sql).
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgvector(map: "vector")]
+}
+
+// ----------------------------------------------------------------------------
+// Plataforma (sem tenant_id)
+// ----------------------------------------------------------------------------
+
+enum PlanCode {
+  starter
+  pro
+  enterprise
+}
+
+model Plan {
+  id            String         @id @default(uuid()) @db.Uuid
+  code          PlanCode       @unique
+  name          String
+  limits        Json // { whatsappChannels, agents, conversationsPerMonth }
+  subscriptions Subscription[]
+  createdAt     DateTime       @default(now()) @map("created_at")
+
+  @@map("plans")
+}
+
+model Tenant {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  subdomain String   @unique
+  branding  Json? // { logoUrl, primaryColor, ... }
+  status    String   @default("active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  users           User[]
+  subscriptions   Subscription[]
+  agents          Agent[]
+  knowledgeBases  KnowledgeBase[]
+  documents       Document[]
+  embeddings      Embedding[]
+  whatsappChannels WhatsAppChannel[]
+  contacts        Contact[]
+  conversations   Conversation[]
+  messages        Message[]
+  usageCounters   UsageCounter[]
+  auditLogs       AuditLog[]
+
+  @@map("tenants")
+}
+
+model Subscription {
+  id                   String    @id @default(uuid()) @db.Uuid
+  tenantId             String    @map("tenant_id") @db.Uuid
+  planId               String    @map("plan_id") @db.Uuid
+  status               String    @default("active")
+  stripeSubscriptionId String?   @map("stripe_subscription_id")
+  currentPeriodEnd     DateTime? @map("current_period_end")
+  createdAt            DateTime  @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan   Plan   @relation(fields: [planId], references: [id])
+
+  @@index([tenantId])
+  @@map("subscriptions")
+}
+
+// ----------------------------------------------------------------------------
+// Identidade (tenant-scoped)
+// ----------------------------------------------------------------------------
+
+enum Role {
+  super_admin
+  owner
+  manager
+  attendant
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  email        String
+  passwordHash String   @map("password_hash")
+  name         String?
+  role         Role     @default(attendant)
+  status       String   @default("active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  refreshTokens RefreshToken[]
+  conversations Conversation[] @relation("assignedUser")
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ----------------------------------------------------------------------------
+// Agentes e Conhecimento
+// ----------------------------------------------------------------------------
+
+model Agent {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  name            String
+  goal            String?
+  personality     String?
+  temperature     Float    @default(0.7)
+  systemPrompt    String   @map("system_prompt")
+  provider        String   @default("openai")
+  model           String   @default("gpt-4o-mini")
+  knowledgeBaseId String?  @map("knowledge_base_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  knowledgeBase KnowledgeBase? @relation(fields: [knowledgeBaseId], references: [id])
+  conversations Conversation[]
+
+  @@index([tenantId])
+  @@map("agents")
+}
+
+model KnowledgeBase {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  documents Document[]
+  agents    Agent[]
+
+  @@index([tenantId])
+  @@map("knowledge_bases")
+}
+
+enum DocumentStatus {
+  pending
+  processing
+  done
+  error
+}
+
+model Document {
+  id              String         @id @default(uuid()) @db.Uuid
+  tenantId        String         @map("tenant_id") @db.Uuid
+  knowledgeBaseId String         @map("knowledge_base_id") @db.Uuid
+  filename        String
+  type            String
+  status          DocumentStatus @default(pending)
+  error           String?
+  createdAt       DateTime       @default(now()) @map("created_at")
+
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  knowledgeBase KnowledgeBase @relation(fields: [knowledgeBaseId], references: [id], onDelete: Cascade)
+  embeddings    Embedding[]
+
+  @@index([tenantId, knowledgeBaseId])
+  @@map("documents")
+}
+
+// Embedding: a coluna vector é adicionada via SQL na migration (Unsupported aqui).
+model Embedding {
+  id         String                      @id @default(uuid()) @db.Uuid
+  tenantId   String                      @map("tenant_id") @db.Uuid
+  documentId String                      @map("document_id") @db.Uuid
+  chunkText  String                      @map("chunk_text")
+  embedding  Unsupported("vector(1536)")?
+  createdAt  DateTime                    @default(now()) @map("created_at")
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("embeddings")
+}
+
+// ----------------------------------------------------------------------------
+// WhatsApp / Conversas
+// ----------------------------------------------------------------------------
+
+model WhatsAppChannel {
+  id                   String   @id @default(uuid()) @db.Uuid
+  tenantId             String   @map("tenant_id") @db.Uuid
+  provider             String   @default("meta_cloud")
+  phoneNumber          String   @map("phone_number")
+  credentialsEncrypted String   @map("credentials_encrypted")
+  status               String   @default("active")
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+
+  @@index([tenantId])
+  @@map("whatsapp_channels")
+}
+
+model Contact {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  phone     String
+  name      String?
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+
+  @@unique([tenantId, phone])
+  @@index([tenantId])
+  @@map("contacts")
+}
+
+enum ConversationState {
+  ai
+  human
+  waiting
+  closed
+}
+
+model Conversation {
+  id             String            @id @default(uuid()) @db.Uuid
+  tenantId       String            @map("tenant_id") @db.Uuid
+  contactId      String            @map("contact_id") @db.Uuid
+  channelId      String            @map("channel_id") @db.Uuid
+  agentId        String?           @map("agent_id") @db.Uuid
+  assignedUserId String?           @map("assigned_user_id") @db.Uuid
+  state          ConversationState @default(ai)
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  tenant       Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact      Contact         @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  channel      WhatsAppChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  agent        Agent?          @relation(fields: [agentId], references: [id])
+  assignedUser User?           @relation("assignedUser", fields: [assignedUserId], references: [id])
+  messages     Message[]
+
+  @@index([tenantId, state])
+  @@map("conversations")
+}
+
+enum MessageDirection {
+  inbound
+  outbound
+}
+
+model Message {
+  id                String           @id @default(uuid()) @db.Uuid
+  tenantId          String           @map("tenant_id") @db.Uuid
+  conversationId    String           @map("conversation_id") @db.Uuid
+  direction         MessageDirection
+  content           String
+  providerMessageId String?          @unique @map("provider_message_id")
+  createdAt         DateTime         @default(now()) @map("created_at")
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, conversationId])
+  @@map("messages")
+}
+
+// ----------------------------------------------------------------------------
+// Billing / Auditoria
+// ----------------------------------------------------------------------------
+
+model UsageCounter {
+  id                 String   @id @default(uuid()) @db.Uuid
+  tenantId           String   @map("tenant_id") @db.Uuid
+  period             String // ex.: "2026-06"
+  conversationsCount Int      @default(0) @map("conversations_count")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, period])
+  @@index([tenantId])
+  @@map("usage_counters")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String?  @map("tenant_id") @db.Uuid
+  actorUserId String?  @map("actor_user_id") @db.Uuid
+  action      String
+  resource    String?
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@map("audit_logs")
+}
