@@ -137,6 +137,7 @@ model Agent {
   tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   knowledgeBase KnowledgeBase? @relation(fields: [knowledgeBaseId], references: [id])
   conversations Conversation[]
+  defaultForChannels WhatsAppChannel[] @relation("channelDefaultAgent")
 
   @@index([tenantId])
   @@map("agents")
@@ -207,10 +208,12 @@ model WhatsAppChannel {
   provider             String   @default("meta_cloud")
   phoneNumber          String   @map("phone_number")
   credentialsEncrypted String   @map("credentials_encrypted")
+  defaultAgentId       String?  @map("default_agent_id") @db.Uuid
   status               String   @default("active")
   createdAt            DateTime @default(now()) @map("created_at")
 
   tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  defaultAgent  Agent?         @relation("channelDefaultAgent", fields: [defaultAgentId], references: [id])
   conversations Conversation[]
 
   @@index([tenantId])

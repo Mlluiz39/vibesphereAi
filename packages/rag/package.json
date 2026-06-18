@@ -1,5 +1,5 @@
 {
-  "name": "@vibesphere/llm",
+  "name": "@vibesphere/rag",
   "version": "0.1.0",
   "private": true,
   "main": "dist/index.js",
@@ -10,8 +10,8 @@
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
-    "@vibesphere/shared": "workspace:*",
-    "openai": "^4.67.0"
+    "@vibesphere/database": "workspace:*",
+    "@vibesphere/llm": "workspace:*"
   },
   "devDependencies": {
     "@vibesphere/config": "workspace:*",

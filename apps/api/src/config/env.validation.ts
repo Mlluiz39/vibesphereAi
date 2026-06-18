@@ -5,6 +5,7 @@ const REQUIRED = [
   'DATABASE_URL',
   'JWT_ACCESS_SECRET',
   'JWT_REFRESH_SECRET',
+  'ENCRYPTION_KEY',
 ] as const;
 
 export function validateEnv(config: Record<string, unknown>) {

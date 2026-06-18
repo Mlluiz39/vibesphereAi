@@ -1,38 +1,46 @@
 import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { QUEUE } from '@vibesphere/shared';
+import { IngestionJobData, markIngestionError, processIngestion } from './ingestion';
+import { InboundJobData, processInboundMessage } from './engine';
 
 /**
  * Ponto de entrada dos workers BullMQ.
- * Fase 1: esqueletos das filas de ingestão de documentos e mensagens inbound.
- * A lógica de cada processador será implementada nas tarefas 7.2 e 9.1 (ver tasks.md).
+ * - document-ingestion: pipeline RAG (extração -> chunking -> embeddings -> pgvector) [Tarefa 7]
+ * - inbound-messages: orquestração de conversa [Tarefa 9 — stub]
  */
 const connection = new IORedis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
   maxRetriesPerRequest: null,
 });
 
-const ingestionWorker = new Worker(
+const ingestionWorker = new Worker<IngestionJobData>(
   QUEUE.DOCUMENT_INGESTION,
   async (job) => {
-    // TODO 7.2: extrair texto -> chunking -> embeddings -> pgvector
-    console.log(`[ingestion] job ${job.id} recebido (stub)`);
+    const result = await processIngestion(job.data);
+    console.log(`[ingestion] documento ${job.data.documentId}: ${result.chunks} chunks`);
+    return result;
   },
-  { connection },
+  { connection, concurrency: 3 },
 );
 
-const messageWorker = new Worker(
+// Quando as retentativas se esgotam, marca o documento como erro (Req 6.5).
+ingestionWorker.on('failed', async (job, err) => {
+  console.error(`[ingestion] job ${job?.id} falhou: ${err.message}`);
+  if (job && job.attemptsMade >= (job.opts.attempts ?? 1)) {
+    await markIngestionError(job.data, err.message);
+  }
+});
+
+const messageWorker = new Worker<InboundJobData>(
   QUEUE.INBOUND_MESSAGES,
   async (job) => {
-    // TODO 9.1/9.2: resolver tenant/contato/conversa, persistir e gerar resposta via LLM
-    console.log(`[messages] job ${job.id} recebido (stub)`);
+    await processInboundMessage(job.data);
   },
-  { connection },
+  { connection, concurrency: 5 },
 );
 
-for (const worker of [ingestionWorker, messageWorker]) {
-  worker.on('failed', (job, err) => {
-    console.error(`Job ${job?.id} falhou:`, err.message);
-  });
-}
+messageWorker.on('failed', (job, err) => {
+  console.error(`[messages] job ${job?.id} falhou: ${err.message}`);
+});
 
 console.log('VibeSphere workers iniciados (ingestion, messages).');

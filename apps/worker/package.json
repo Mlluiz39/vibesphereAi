@@ -12,13 +12,20 @@
   "dependencies": {
     "@vibesphere/database": "workspace:*",
     "@vibesphere/llm": "workspace:*",
+    "@vibesphere/rag": "workspace:*",
     "@vibesphere/shared": "workspace:*",
+    "@vibesphere/whatsapp": "workspace:*",
     "bullmq": "^5.13.2",
-    "ioredis": "^5.4.1"
+    "ioredis": "^5.4.1",
+    "mammoth": "^1.8.0",
+    "node-html-parser": "^6.1.13",
+    "pdf-parse": "^1.1.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vibesphere/config": "workspace:*",
     "@types/node": "^22.7.4",
+    "@types/pdf-parse": "^1.1.4",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.6.2"
   }
