@@ -51,6 +51,21 @@ export async function processInboundMessage(data: InboundJobData): Promise<void>
       create: { tenantId, phone: message.from, name: message.contactName },
     });
 
+    // Captura automática de lead (CRM) — Req 1.3 (Fase 2). Idempotente por contato.
+    const existingLead = await tx.lead.findFirst({ where: { contactId: contact.id } });
+    if (!existingLead) {
+      await tx.lead.create({
+        data: {
+          tenantId,
+          contactId: contact.id,
+          name: contact.name ?? message.from,
+          phone: message.from,
+          source: 'whatsapp',
+          status: 'new',
+        },
+      });
+    }
+
     // Conversa ativa existente (não finalizada) para contato + canal.
     let conversation = await tx.conversation.findFirst({
       where: { contactId: contact.id, channelId, state: { not: ConversationState.closed } },

@@ -10,6 +10,7 @@ import { BillingModule } from './modules/billing/billing.module';
 import { KnowledgeModule } from './modules/knowledge/knowledge.module';
 import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
 import { InboxModule } from './modules/inbox/inbox.module';
+import { CrmModule } from './modules/crm/crm.module';
 import { PrivacyModule } from './modules/privacy/privacy.module';
 import { QueueModule } from './queue/queue.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
@@ -32,6 +33,7 @@ import { validateEnv } from './config/env.validation';
     KnowledgeModule,
     WhatsAppModule,
     InboxModule,
+    CrmModule,
     PrivacyModule,
   ],
   providers: [
