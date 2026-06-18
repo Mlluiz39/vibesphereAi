@@ -22,7 +22,8 @@ DECLARE
   t text;
   tenant_tables text[] := ARRAY[
     'subscriptions','users','agents','knowledge_bases','documents','embeddings',
-    'whatsapp_channels','contacts','conversations','messages','usage_counters'
+    'whatsapp_channels','contacts','conversations','messages','usage_counters',
+    'conversation_notes','labels','conversation_labels'
   ];
 BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP

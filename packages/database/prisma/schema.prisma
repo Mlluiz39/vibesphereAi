@@ -53,6 +53,9 @@ model Tenant {
   messages        Message[]
   usageCounters   UsageCounter[]
   auditLogs       AuditLog[]
+  conversationNotes  ConversationNote[]
+  labels             Label[]
+  conversationLabels ConversationLabel[]
 
   @@map("tenants")
 }
@@ -97,6 +100,7 @@ model User {
   tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   refreshTokens RefreshToken[]
   conversations Conversation[] @relation("assignedUser")
+  conversationNotes ConversationNote[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -260,6 +264,8 @@ model Conversation {
   agent        Agent?          @relation(fields: [agentId], references: [id])
   assignedUser User?           @relation("assignedUser", fields: [assignedUserId], references: [id])
   messages     Message[]
+  notes        ConversationNote[]
+  labels       ConversationLabel[]
 
   @@index([tenantId, state])
   @@map("conversations")
@@ -287,9 +293,57 @@ model Message {
 }
 
 // ----------------------------------------------------------------------------
-// Billing / Auditoria
+// Inbox (anotações e etiquetas)
 // ----------------------------------------------------------------------------
 
+model ConversationNote {
+  id             String   @id @default(uuid()) @db.Uuid
+  tenantId       String   @map("tenant_id") @db.Uuid
+  conversationId String   @map("conversation_id") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  body           String
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@index([tenantId, conversationId])
+  @@map("conversation_notes")
+}
+
+model Label {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @map("tenant_id") @db.Uuid
+  name      String
+  color     String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationLabels ConversationLabel[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("labels")
+}
+
+model ConversationLabel {
+  tenantId       String @map("tenant_id") @db.Uuid
+  conversationId String @map("conversation_id") @db.Uuid
+  labelId        String @map("label_id") @db.Uuid
+
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  label        Label        @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, labelId])
+  @@index([tenantId])
+  @@map("conversation_labels")
+}
+
+// ----------------------------------------------------------------------------
+// Billing / Auditoria
+// ----------------------------------------------------------------------------
 model UsageCounter {
   id                 String   @id @default(uuid()) @db.Uuid
   tenantId           String   @map("tenant_id") @db.Uuid
