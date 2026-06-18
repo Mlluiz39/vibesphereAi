@@ -51,14 +51,14 @@
   - [ ] 6.2 `PlanLimitGuard` para limite de agentes por plano
     - _Requisitos: 5.2, 5.3_
 
-- [ ] 7. Base de conhecimento e pipeline RAG (módulo `knowledge` + worker)
-  - [ ] 7.1 CRUD de bases e upload de documentos com criação de job de ingestão
+- [x] 7. Base de conhecimento e pipeline RAG (módulo `knowledge` + worker)
+  - [x] 7.1 CRUD de bases e upload de documentos com criação de job de ingestão
     - _Requisitos: 6.1, 6.2_
-  - [ ] 7.2 Worker de ingestão: extração → chunking → embeddings → pgvector
+  - [x] 7.2 Worker de ingestão: extração → chunking → embeddings → pgvector
     - _Requisitos: 6.2, 6.3_
-  - [ ] 7.3 Recuperação de chunks relevantes para uso em resposta (retriever)
+  - [x] 7.3 Recuperação de chunks relevantes para uso em resposta (retriever)
     - _Requisitos: 6.4_
-  - [ ] 7.4 Tratamento de falha de ingestão + reprocessamento
+  - [x] 7.4 Tratamento de falha de ingestão + reprocessamento
     - _Requisitos: 6.5_
 
 - [ ] 8. Integração WhatsApp (módulo `whatsapp`)

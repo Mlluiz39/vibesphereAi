@@ -95,7 +95,8 @@ vibesphere/
 ├── packages/
 │   ├── database/       # Schema Prisma + client + RLS + seed
 │   ├── llm/            # LLMProvider abstraction + adapters (OpenAI) + resiliência
-│   ├── shared/         # Tipos, enums (roles), planos/limites, nomes de filas
+│   ├── rag/            # Chunking, embeddings, vetor (pgvector) e retriever
+│   ├── shared/         # Tipos, enums (roles), planos/limites, nomes de filas, storage
 │   └── config/         # tsconfig base
 ├── docker-compose.yml  # PostgreSQL (pgvector) + Redis
 ├── turbo.json
