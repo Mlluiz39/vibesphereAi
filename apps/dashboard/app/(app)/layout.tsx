@@ -10,6 +10,7 @@ const NAV = [
   { href: '/inbox', label: 'Inbox' },
   { href: '/agents', label: 'Agentes' },
   { href: '/knowledge', label: 'Conhecimento' },
+  { href: '/channels', label: 'Canais' },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

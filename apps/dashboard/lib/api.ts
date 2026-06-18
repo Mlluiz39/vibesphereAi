@@ -41,6 +41,28 @@ export function clearSession() {
   localStorage.removeItem(SUBDOMAIN_KEY);
 }
 
+export interface RegisterInput {
+  companyName: string;
+  subdomain: string;
+  ownerName: string;
+  ownerEmail: string;
+  ownerPassword: string;
+}
+
+/** Cadastra a empresa + Owner e já faz login. */
+export async function register(input: RegisterInput): Promise<void> {
+  const res = await fetch(`${API_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ message: 'Falha no cadastro' }));
+    throw new Error((body as { message?: string }).message ?? 'Falha no cadastro');
+  }
+  await login(input.subdomain, input.ownerEmail, input.ownerPassword);
+}
+
 export async function login(subdomain: string, email: string, password: string): Promise<void> {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',

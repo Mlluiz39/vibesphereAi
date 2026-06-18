@@ -56,6 +56,12 @@ export default function LoginPage() {
             {loading ? 'Entrando...' : 'Entrar'}
           </Button>
         </form>
+        <p style={{ color: colors.muted, fontSize: 14, marginBottom: 0 }}>
+          Não tem conta?{' '}
+          <a href="/register" style={{ color: colors.primary }}>
+            Criar empresa
+          </a>
+        </p>
       </Card>
     </main>
   );
