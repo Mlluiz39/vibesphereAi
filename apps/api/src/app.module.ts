@@ -7,6 +7,7 @@ import { TenantModule } from './modules/tenant/tenant.module';
 import { UserModule } from './modules/user/user.module';
 import { AgentModule } from './modules/agent/agent.module';
 import { KnowledgeModule } from './modules/knowledge/knowledge.module';
+import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
 import { QueueModule } from './queue/queue.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/auth/guards/roles.guard';
@@ -24,6 +25,7 @@ import { validateEnv } from './config/env.validation';
     UserModule,
     AgentModule,
     KnowledgeModule,
+    WhatsAppModule,
   ],
   providers: [
     // Ordem importa: autentica -> seta tenant context -> valida role

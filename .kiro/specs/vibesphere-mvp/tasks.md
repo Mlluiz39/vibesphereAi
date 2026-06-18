@@ -61,22 +61,22 @@
   - [x] 7.4 Tratamento de falha de ingestão + reprocessamento
     - _Requisitos: 6.5_
 
-- [ ] 8. Integração WhatsApp (módulo `whatsapp`)
-  - [ ] 8.1 Interface `WhatsAppProvider` + `MetaCloudProvider` (envio + parse)
+- [x] 8. Integração WhatsApp (módulo `whatsapp`)
+  - [x] 8.1 Interface `WhatsAppProvider` + `MetaCloudProvider` (envio + parse)
     - _Requisitos: 7.1, 7.4_
-  - [ ] 8.2 Webhook com verificação de assinatura e enfileiramento (resposta rápida)
+  - [x] 8.2 Webhook com verificação de assinatura e enfileiramento (resposta rápida)
     - _Requisitos: 7.2_
-  - [ ] 8.3 Envio com retry/backoff e registro de falha
+  - [x] 8.3 Envio com retry/backoff e registro de falha
     - _Requisitos: 7.5_
-  - [ ] 8.4 Cadastro de canal por tenant com limite de números do plano
+  - [x] 8.4 Cadastro de canal por tenant com limite de números do plano
     - _Requisitos: 7.3_
 
-- [ ] 9. Engine de orquestração de conversa (módulo `conversation` + worker)
-  - [ ] 9.1 Worker de mensagens: resolver tenant/contato/conversa e persistir inbound
+- [x] 9. Engine de orquestração de conversa (módulo `conversation` + worker)
+  - [x] 9.1 Worker de mensagens: resolver tenant/contato/conversa e persistir inbound
     - _Requisitos: 8.1, 8.3_
-  - [ ] 9.2 Geração de resposta via agente (memória + RAG) quando estado = IA
+  - [x] 9.2 Geração de resposta via agente (memória + RAG) quando estado = IA
     - _Requisitos: 8.2, 8.5_
-  - [ ] 9.3 Bloqueio por limite de conversas do plano
+  - [x] 9.3 Bloqueio por limite de conversas do plano
     - _Requisitos: 8.4, 10.5_
 
 - [ ] 10. Inbox omnichannel (módulo `inbox`)

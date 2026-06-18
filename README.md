@@ -96,7 +96,8 @@ vibesphere/
 │   ├── database/       # Schema Prisma + client + RLS + seed
 │   ├── llm/            # LLMProvider abstraction + adapters (OpenAI) + resiliência
 │   ├── rag/            # Chunking, embeddings, vetor (pgvector) e retriever
-│   ├── shared/         # Tipos, enums (roles), planos/limites, nomes de filas, storage
+│   ├── whatsapp/       # WhatsAppProvider abstraction + Meta Cloud API
+│   ├── shared/         # Tipos, enums (roles), planos/limites, filas, storage, crypto
 │   └── config/         # tsconfig base
 ├── docker-compose.yml  # PostgreSQL (pgvector) + Redis
 ├── turbo.json

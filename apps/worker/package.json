@@ -14,6 +14,7 @@
     "@vibesphere/llm": "workspace:*",
     "@vibesphere/rag": "workspace:*",
     "@vibesphere/shared": "workspace:*",
+    "@vibesphere/whatsapp": "workspace:*",
     "bullmq": "^5.13.2",
     "ioredis": "^5.4.1",
     "mammoth": "^1.8.0",

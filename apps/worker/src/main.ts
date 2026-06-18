@@ -2,6 +2,7 @@ import { Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { QUEUE } from '@vibesphere/shared';
 import { IngestionJobData, markIngestionError, processIngestion } from './ingestion';
+import { InboundJobData, processInboundMessage } from './engine';
 
 /**
  * Ponto de entrada dos workers BullMQ.
@@ -30,13 +31,12 @@ ingestionWorker.on('failed', async (job, err) => {
   }
 });
 
-const messageWorker = new Worker(
+const messageWorker = new Worker<InboundJobData>(
   QUEUE.INBOUND_MESSAGES,
   async (job) => {
-    // TODO Tarefa 9: resolver tenant/contato/conversa, persistir e gerar resposta via LLM
-    console.log(`[messages] job ${job.id} recebido (stub)`);
+    await processInboundMessage(job.data);
   },
-  { connection },
+  { connection, concurrency: 5 },
 );
 
 messageWorker.on('failed', (job, err) => {

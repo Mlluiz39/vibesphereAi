@@ -22,6 +22,7 @@
     "@vibesphere/llm": "workspace:*",
     "@vibesphere/rag": "workspace:*",
     "@vibesphere/shared": "workspace:*",
+    "@vibesphere/whatsapp": "workspace:*",
     "argon2": "^0.41.1",
     "bullmq": "^5.13.2",
     "class-transformer": "^0.5.1",

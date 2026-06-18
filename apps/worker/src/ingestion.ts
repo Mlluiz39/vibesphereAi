@@ -1,8 +1,8 @@
 import { documentStoragePath } from '@vibesphere/shared';
 import { DocumentStatus, withTenant } from '@vibesphere/database';
-import { LLMProviderFactory, LLMProvider } from '@vibesphere/llm';
 import { chunkText, embedTexts, replaceDocumentEmbeddings } from '@vibesphere/rag';
 import { extractText } from './extract';
+import { embeddingModel, getEmbeddingProvider } from './providers';
 
 export interface IngestionJobData {
   tenantId: string;
@@ -11,25 +11,13 @@ export interface IngestionJobData {
 
 const EMBEDDING_BATCH = 96;
 
-let cachedProvider: LLMProvider | undefined;
-function getEmbeddingProvider(): LLMProvider {
-  if (!cachedProvider) {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      throw new Error('OPENAI_API_KEY não configurada para gerar embeddings');
-    }
-    cachedProvider = LLMProviderFactory.create({ kind: 'openai', apiKey });
-  }
-  return cachedProvider;
-}
-
 /**
  * Pipeline de ingestão — Requisitos 6.2/6.3.
  * extração -> chunking -> embeddings -> pgvector. Atualiza o status do documento.
  */
 export async function processIngestion(data: IngestionJobData): Promise<{ chunks: number }> {
   const { tenantId, documentId } = data;
-  const embeddingModel = process.env.OPENAI_EMBEDDING_MODEL ?? 'text-embedding-3-small';
+  const model = embeddingModel();
 
   // 1. Marca como processando e carrega o documento.
   const document = await withTenant(tenantId, async (tx) => {
@@ -67,7 +55,7 @@ export async function processIngestion(data: IngestionJobData): Promise<{ chunks
   const stored: { text: string; embedding: number[] }[] = [];
   for (let i = 0; i < chunks.length; i += EMBEDDING_BATCH) {
     const batch = chunks.slice(i, i + EMBEDDING_BATCH);
-    const vectors = await embedTexts(provider, embeddingModel, batch);
+    const vectors = await embedTexts(provider, model, batch);
     batch.forEach((t, idx) => stored.push({ text: t, embedding: vectors[idx] ?? [] }));
   }
 
