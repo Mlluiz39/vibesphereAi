@@ -45,10 +45,10 @@
   - [ ] 5.3 Implementar `ResilientLLMProvider` (retry + fallback)
     - _Requisitos: 5.5_
 
-- [ ] 6. Agentes (módulo `agent`)
-  - [ ] 6.1 CRUD de agentes com config completa e associação a base de conhecimento
+- [x] 6. Agentes (módulo `agent`)
+  - [x] 6.1 CRUD de agentes com config completa e associação a base de conhecimento
     - _Requisitos: 5.1, 5.6_
-  - [ ] 6.2 `PlanLimitGuard` para limite de agentes por plano
+  - [x] 6.2 `PlanLimitGuard` para limite de agentes por plano
     - _Requisitos: 5.2, 5.3_
 
 - [ ] 7. Base de conhecimento e pipeline RAG (módulo `knowledge` + worker)

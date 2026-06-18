@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './modules/auth/auth.module';
 import { TenantModule } from './modules/tenant/tenant.module';
 import { UserModule } from './modules/user/user.module';
+import { AgentModule } from './modules/agent/agent.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RolesGuard } from './modules/auth/guards/roles.guard';
 import { TenantContextInterceptor } from './common/tenant-context.interceptor';
@@ -18,6 +19,7 @@ import { validateEnv } from './config/env.validation';
     AuthModule,
     TenantModule,
     UserModule,
+    AgentModule,
   ],
   providers: [
     // Ordem importa: autentica -> seta tenant context -> valida role
