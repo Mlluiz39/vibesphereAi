@@ -24,7 +24,8 @@ DECLARE
     'subscriptions','users','agents','knowledge_bases','documents','embeddings',
     'whatsapp_channels','contacts','conversations','messages','usage_counters',
     'conversation_notes','labels','conversation_labels',
-    'leads','pipelines','pipeline_stages','opportunities'
+    'leads','pipelines','pipeline_stages','opportunities',
+    'flows','flow_nodes','flow_edges','flow_runs'
   ];
 BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP

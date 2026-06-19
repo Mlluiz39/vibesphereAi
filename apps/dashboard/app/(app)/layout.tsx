@@ -12,6 +12,9 @@ const NAV = [
   { href: '/knowledge', label: 'Conhecimento' },
   { href: '/channels', label: 'Canais' },
   { href: '/crm', label: 'CRM' },
+  { href: '/analytics', label: 'Analytics' },
+  { href: '/flows', label: 'Flows' },
+  { href: '/marketplace', label: 'Marketplace' },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

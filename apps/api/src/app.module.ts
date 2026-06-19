@@ -11,6 +11,9 @@ import { KnowledgeModule } from './modules/knowledge/knowledge.module';
 import { WhatsAppModule } from './modules/whatsapp/whatsapp.module';
 import { InboxModule } from './modules/inbox/inbox.module';
 import { CrmModule } from './modules/crm/crm.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { FlowModule } from './modules/flow/flow.module';
+import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 import { PrivacyModule } from './modules/privacy/privacy.module';
 import { QueueModule } from './queue/queue.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
@@ -34,6 +37,9 @@ import { validateEnv } from './config/env.validation';
     WhatsAppModule,
     InboxModule,
     CrmModule,
+    AnalyticsModule,
+    FlowModule,
+    MarketplaceModule,
     PrivacyModule,
   ],
   providers: [

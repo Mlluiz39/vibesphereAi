@@ -5,6 +5,7 @@ import { QUEUE } from '@vibesphere/shared';
 
 export const INGESTION_QUEUE = 'INGESTION_QUEUE';
 export const MESSAGES_QUEUE = 'MESSAGES_QUEUE';
+export const FLOW_QUEUE = 'FLOW_QUEUE';
 export const REDIS_CONNECTION = 'REDIS_CONNECTION';
 
 /**
@@ -51,7 +52,20 @@ export const REDIS_CONNECTION = 'REDIS_CONNECTION';
           },
         }),
     },
+    {
+      provide: FLOW_QUEUE,
+      inject: [REDIS_CONNECTION],
+      useFactory: (connection: IORedis) =>
+        new Queue(QUEUE.FLOW_RUNS, {
+          connection,
+          defaultJobOptions: {
+            attempts: 1,
+            removeOnComplete: 200,
+            removeOnFail: 1000,
+          },
+        }),
+    },
   ],
-  exports: [INGESTION_QUEUE, MESSAGES_QUEUE, REDIS_CONNECTION],
+  exports: [INGESTION_QUEUE, MESSAGES_QUEUE, FLOW_QUEUE, REDIS_CONNECTION],
 })
 export class QueueModule {}
