@@ -86,9 +86,7 @@ model Subscription {
   @@map("subscriptions")
 }
 
-/**
- * Idempotência de webhooks de pagamento (nível de plataforma, sem tenant) — Req 10.4.
- */
+// Idempotência de webhooks de pagamento (nível de plataforma, sem tenant) — Req 10.4.
 model ProcessedWebhookEvent {
   id          String   @id @default(uuid()) @db.Uuid
   provider    String

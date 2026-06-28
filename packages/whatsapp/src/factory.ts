@@ -4,7 +4,7 @@ import { MetaCloudCredentials, MetaCloudProvider } from './providers/meta-cloud.
 
 export interface WhatsAppProviderConfig {
   kind: WhatsAppProviderKind | string;
-  credentials: MetaCloudCredentials & Record<string, unknown>;
+  credentials: MetaCloudCredentials;
 }
 
 /**

@@ -79,7 +79,7 @@ export class KnowledgeService {
           knowledgeBaseId,
           filename: file.originalname,
           type,
-          status: DocumentStatus.PENDING,
+          status: 'pending',
         },
       }),
     );
@@ -103,7 +103,7 @@ export class KnowledgeService {
           knowledgeBaseId,
           filename: dto.title ?? dto.url,
           type: 'url',
-          status: DocumentStatus.PENDING,
+          status: 'pending',
         },
       }),
     );
@@ -129,12 +129,12 @@ export class KnowledgeService {
     await withTenant(tenantId, (tx) =>
       tx.document.update({
         where: { id: documentId },
-        data: { status: DocumentStatus.PENDING, error: null },
+        data: { status: 'pending', error: null },
       }),
     );
 
     await this.enqueue(tenantId, documentId);
-    return { documentId, status: DocumentStatus.PENDING };
+    return { documentId, status: 'pending' as const };
   }
 
   private enqueue(tenantId: string, documentId: string) {

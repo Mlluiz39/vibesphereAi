@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { withTenant } from '@vibesphere/database';
+import { Prisma, withTenant } from '@vibesphere/database';
 
 @Injectable()
 export class TenantService {
@@ -20,7 +20,7 @@ export class TenantService {
   /** Atualiza branding básico — Requisito 4.4. */
   async updateBranding(tenantId: string, branding: Record<string, unknown>) {
     return withTenant(tenantId, (tx) =>
-      tx.tenant.update({ where: { id: tenantId }, data: { branding } }),
+      tx.tenant.update({ where: { id: tenantId }, data: { branding: branding as Prisma.InputJsonValue } }),
     );
   }
 }

@@ -5,55 +5,93 @@ import { IngestionJobData, markIngestionError, processIngestion } from './ingest
 import { InboundJobData, processInboundMessage } from './engine';
 import { FlowRunJobData, processFlowRun } from './flow';
 
-/**
- * Ponto de entrada dos workers BullMQ.
- * - document-ingestion: pipeline RAG (extração -> chunking -> embeddings -> pgvector) [Tarefa 7]
- * - inbound-messages: orquestração de conversa [Tarefa 9 — stub]
- */
-const connection = new IORedis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
-  maxRetriesPerRequest: null,
-});
+const REDIS_URL = process.env.REDIS_URL ?? 'redis://localhost:6379';
 
-const ingestionWorker = new Worker<IngestionJobData>(
-  QUEUE.DOCUMENT_INGESTION,
-  async (job) => {
-    const result = await processIngestion(job.data);
-    console.log(`[ingestion] documento ${job.data.documentId}: ${result.chunks} chunks`);
-    return result;
-  },
-  { connection, concurrency: 3 },
-);
+function createConnection(): IORedis {
+  return new IORedis(REDIS_URL, {
+    maxRetriesPerRequest: null,
+    enableOfflineQueue: false,
+    retryStrategy(times) {
+      if (times > 10) {
+        console.error('[redis] não conseguiu conectar após 10 tentativas. Encerrando.');
+        process.exit(1);
+      }
+      return Math.min(times * 200, 3000);
+    },
+  });
+}
 
-// Quando as retentativas se esgotam, marca o documento como erro (Req 6.5).
-ingestionWorker.on('failed', async (job, err) => {
-  console.error(`[ingestion] job ${job?.id} falhou: ${err.message}`);
-  if (job && job.attemptsMade >= (job.opts.attempts ?? 1)) {
-    await markIngestionError(job.data, err.message);
+let connection: IORedis;
+
+function waitForConnection(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (connection.status === 'ready') {
+      resolve();
+      return;
+    }
+    connection.once('ready', resolve);
+    connection.once('error', (err) => reject(err));
+  });
+}
+
+connection = createConnection();
+
+connection.on('error', (err) => {
+  if (err.message.includes('ECONNREFUSED')) {
+    console.warn(`[redis] aguardando redis em ${REDIS_URL}...`);
   }
 });
 
-const messageWorker = new Worker<InboundJobData>(
-  QUEUE.INBOUND_MESSAGES,
-  async (job) => {
-    await processInboundMessage(job.data);
-  },
-  { connection, concurrency: 5 },
-);
+async function bootstrap() {
+  try {
+    await waitForConnection();
+  } catch (err) {
+    console.error(`[redis] falha ao conectar em ${REDIS_URL}: ${(err as Error).message}`);
+    process.exit(1);
+  }
 
-messageWorker.on('failed', (job, err) => {
-  console.error(`[messages] job ${job?.id} falhou: ${err.message}`);
-});
+  const ingestionWorker = new Worker<IngestionJobData>(
+    QUEUE.DOCUMENT_INGESTION,
+    async (job) => {
+      const result = await processIngestion(job.data);
+      console.log(`[ingestion] documento ${job.data.documentId}: ${result.chunks} chunks`);
+      return result;
+    },
+    { connection: connection as any, concurrency: 3 },
+  );
 
-const flowWorker = new Worker<FlowRunJobData>(
-  QUEUE.FLOW_RUNS,
-  async (job) => {
-    await processFlowRun(job.data);
-  },
-  { connection, concurrency: 5 },
-);
+  ingestionWorker.on('failed', async (job, err) => {
+    console.error(`[ingestion] job ${job?.id} falhou: ${err.message}`);
+    if (job && job.attemptsMade >= (job.opts.attempts ?? 1)) {
+      await markIngestionError(job.data, err.message);
+    }
+  });
 
-flowWorker.on('failed', (job, err) => {
-  console.error(`[flows] run ${job?.data?.runId} falhou: ${err.message}`);
-});
+  const messageWorker = new Worker<InboundJobData>(
+    QUEUE.INBOUND_MESSAGES,
+    async (job) => {
+      await processInboundMessage(job.data);
+    },
+    { connection: connection as any, concurrency: 5 },
+  );
 
-console.log('VibeSphere workers iniciados (ingestion, messages, flows).');
+  messageWorker.on('failed', (job, err) => {
+    console.error(`[messages] job ${job?.id} falhou: ${err.message}`);
+  });
+
+  const flowWorker = new Worker<FlowRunJobData>(
+    QUEUE.FLOW_RUNS,
+    async (job) => {
+      await processFlowRun(job.data);
+    },
+    { connection: connection as any, concurrency: 5 },
+  );
+
+  flowWorker.on('failed', (job, err) => {
+    console.error(`[flows] run ${job?.data?.runId} falhou: ${err.message}`);
+  });
+
+  console.log('VibeSphere workers iniciados (ingestion, messages, flows).');
+}
+
+bootstrap();

@@ -29,7 +29,7 @@ export const REDIS_CONNECTION = 'REDIS_CONNECTION';
       inject: [REDIS_CONNECTION],
       useFactory: (connection: IORedis) =>
         new Queue(QUEUE.DOCUMENT_INGESTION, {
-          connection,
+          connection: connection as any,
           defaultJobOptions: {
             attempts: 3,
             backoff: { type: 'exponential', delay: 2000 },
@@ -43,7 +43,7 @@ export const REDIS_CONNECTION = 'REDIS_CONNECTION';
       inject: [REDIS_CONNECTION],
       useFactory: (connection: IORedis) =>
         new Queue(QUEUE.INBOUND_MESSAGES, {
-          connection,
+          connection: connection as any,
           defaultJobOptions: {
             attempts: 3,
             backoff: { type: 'exponential', delay: 1500 },
@@ -57,7 +57,7 @@ export const REDIS_CONNECTION = 'REDIS_CONNECTION';
       inject: [REDIS_CONNECTION],
       useFactory: (connection: IORedis) =>
         new Queue(QUEUE.FLOW_RUNS, {
-          connection,
+          connection: connection as any,
           defaultJobOptions: {
             attempts: 1,
             removeOnComplete: 200,

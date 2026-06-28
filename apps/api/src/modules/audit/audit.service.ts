@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { prisma } from '@vibesphere/database';
+import { Prisma, prisma } from '@vibesphere/database';
 
 export interface AuditEntry {
   tenantId?: string | null;
@@ -25,7 +25,7 @@ export class AuditService {
           actorUserId: entry.actorUserId ?? null,
           action: entry.action,
           resource: entry.resource,
-          metadata: entry.metadata ?? undefined,
+          metadata: entry.metadata as Prisma.InputJsonValue ?? undefined,
         },
       });
     } catch (err) {

@@ -160,7 +160,7 @@ export class CrmService {
   }
 
   private async ensure(tenantId: string, entity: 'lead' | 'pipeline' | 'contact', id: string) {
-    const found = await withTenant(tenantId, (tx) => {
+    const found = await withTenant(tenantId, async (tx) => {
       if (entity === 'lead') return tx.lead.findUnique({ where: { id } });
       if (entity === 'pipeline') return tx.pipeline.findUnique({ where: { id } });
       return tx.contact.findUnique({ where: { id } });

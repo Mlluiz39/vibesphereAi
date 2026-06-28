@@ -19,7 +19,7 @@ function getFlowQueue(): Queue {
     const connection = new IORedis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
       maxRetriesPerRequest: null,
     });
-    flowQueue = new Queue(QUEUE.FLOW_RUNS, { connection });
+    flowQueue = new Queue(QUEUE.FLOW_RUNS, { connection: connection as any });
   }
   return flowQueue;
 }

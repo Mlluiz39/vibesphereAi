@@ -1,5 +1,5 @@
 import { documentStoragePath } from '@vibesphere/shared';
-import { DocumentStatus, withTenant } from '@vibesphere/database';
+import { withTenant } from '@vibesphere/database';
 import { chunkText, embedTexts, replaceDocumentEmbeddings } from '@vibesphere/rag';
 import { extractText } from './extract';
 import { embeddingModel, getEmbeddingProvider } from './providers';
@@ -27,7 +27,7 @@ export async function processIngestion(data: IngestionJobData): Promise<{ chunks
     }
     await tx.document.update({
       where: { id: documentId },
-      data: { status: DocumentStatus.PROCESSING, error: null },
+      data: { status: 'processing', error: null },
     });
     return doc;
   });
@@ -45,7 +45,7 @@ export async function processIngestion(data: IngestionJobData): Promise<{ chunks
   const chunks = chunkText(text);
   if (chunks.length === 0) {
     await withTenant(tenantId, (tx) =>
-      tx.document.update({ where: { id: documentId }, data: { status: DocumentStatus.DONE } }),
+      tx.document.update({ where: { id: documentId }, data: { status: 'done' } }),
     );
     return { chunks: 0 };
   }
@@ -64,7 +64,7 @@ export async function processIngestion(data: IngestionJobData): Promise<{ chunks
 
   // 6. Conclui.
   await withTenant(tenantId, (tx) =>
-    tx.document.update({ where: { id: documentId }, data: { status: DocumentStatus.DONE } }),
+    tx.document.update({ where: { id: documentId }, data: { status: 'done' } }),
   );
 
   return { chunks: stored.length };
@@ -76,7 +76,7 @@ export async function markIngestionError(data: IngestionJobData, message: string
     await withTenant(data.tenantId, (tx) =>
       tx.document.update({
         where: { id: data.documentId },
-        data: { status: DocumentStatus.ERROR, error: message.slice(0, 1000) },
+        data: { status: 'error', error: message.slice(0, 1000) },
       }),
     );
   } catch {

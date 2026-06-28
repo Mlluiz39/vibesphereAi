@@ -106,7 +106,7 @@ export class MarketplaceService {
       actorUserId,
       action: 'marketplace.install',
       resource: 'template',
-      metadata: { templateId, ...result },
+      metadata: { ...result, templateId },
     });
     return result;
   }
